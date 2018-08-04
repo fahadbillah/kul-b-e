@@ -5,9 +5,12 @@ const jsonfile = require('jsonfile')
 const file = './db.json';
 
 class Pet {
+	test() {
 
-	createPet (req, res){
-		const db = jsonfile.readFileSync(file);
+	}
+
+	createPet(req, res){
+		let db = jsonfile.readFileSync(file); 
 		let statusCode = 200;
 		let error = false;
 		let responseData;
@@ -15,7 +18,6 @@ class Pet {
 		formData._id = uuidv4();
 
 		formData.type = formData.type.toLowerCase().trim()
-		console.log(formData);
 		if (db[formData.type] === undefined) {
 			error = true;
 			statusCode = 400;
@@ -24,11 +26,9 @@ class Pet {
 			let breed = db[formData.type].filter(breed => {
 				if (breed._id === formData.breed) {
 					formData.breed = breed.name;
-					console.log(breed)
 					return breed.name;
 				}
 			});
-			console.log(breed.length)
 		
 			if (!breed.length) {
 				error = true;
@@ -51,13 +51,9 @@ class Pet {
 				} else {
 					owner.pets = [petShortInfo];
 				}
-				console.log(petShortInfo)
-				console.log(owner)
 				return owner;
 			}
 		});
-		// console.log('testinggg')
-		console.log(owner)
 		
 		if (!owner.length) {
 			error = true;
@@ -89,11 +85,11 @@ export default ({ config }) => {
 
 	// perhaps expose some API metadata at the root
 	api.get('/owners', (req, res) => {
-		const db = jsonfile.readFileSync(file);
+		let db = jsonfile.readFileSync(file); 
 		res.json(db.owner);
 	});
 	api.get('/pets', (req, res) => {
-		const db = jsonfile.readFileSync(file);
+		let db = jsonfile.readFileSync(file); 
 		res.json(db.pet);
 	});
 	api.post('/pet', pet.createPet);

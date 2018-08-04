@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import initializeDb from './db';
 import middleware from './middleware';
 import apiV1 from './api/v1';
+import graphql from './api/v1/graph';
 import config from './config.json';
 
 let app = express();
@@ -26,15 +27,17 @@ app.use(bodyParser.json({
 // connect to db
 // initializeDb( db => {
 // 	console.log(db);
-	// internal middleware
-	// app.use(middleware({ config, db }));
+// internal middleware
+// app.use(middleware({ config, db }));
 
-	// api router
-	app.use('/api/v1/', apiV1({ config }));
+// api router
+app.use('/api/v1/', apiV1({ config }));
 
-	app.server.listen(process.env.PORT || config.port, () => {
-		console.log(`Started on port ${app.server.address().port}`);
-	});
+app.use('/api/v1/query/', graphql({	config }));
+
+app.server.listen(process.env.PORT || config.port, () => {
+	console.log(`Started on port ${app.server.address().port}`);
+});
 // });
 
 export default app;

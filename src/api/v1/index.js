@@ -80,18 +80,17 @@ class Pet {
 export default ({ config }) => {
 	let api = Router();
 	let pet = new Pet()
-	// mount the facets resource
-	// api.use('/facets', facets({ config }));
 
-	// perhaps expose some API metadata at the root
 	api.get('/owners', (req, res) => {
 		let db = jsonfile.readFileSync(file); 
 		res.json(db.owner);
 	});
+
 	api.get('/pets', (req, res) => {
 		let db = jsonfile.readFileSync(file); 
 		res.json(db.pet);
 	});
+
 	api.post('/pet', pet.createPet);
 
 	return api;

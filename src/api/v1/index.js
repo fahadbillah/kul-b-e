@@ -1,23 +1,18 @@
-import { version } from '../../../package.json';
 import { Router } from 'express';
 import uuidv4 from 'uuid/v4';
 const jsonfile = require('jsonfile')
 const file = './db.json';
 
 class Pet {
-	test() {
-
-	}
-
-	createPet(req, res){
+	savePet(req, res){
 		let db = jsonfile.readFileSync(file); 
 		let statusCode = 200;
 		let error = false;
 		let responseData;
 		let formData = req.body;
-		formData._id = uuidv4();
+		const actionType = formData._id && (req.method === 'PUT') ? 'edit':'add';
+		formData._id = formData._id || uuidv4();
 
-		formData.type = formData.type.toLowerCase().trim()
 		if (db[formData.type] === undefined) {
 			error = true;
 			statusCode = 400;
@@ -45,16 +40,25 @@ class Pet {
 		
 		let owner = db.owner.filter(owner => {
 			if (owner._id === formData.owner) {
-				// formData.owner = breed.name;
-				if (owner.pets) {
-					owner.pets.push(petShortInfo)
-				} else {
-					owner.pets = [petShortInfo];
+				if (actionType === 'add') {
+					if (owner.pets) {
+						owner.pets.push(petShortInfo)
+					} else {
+						owner.pets = [petShortInfo];
+					}
+				} else if (actionType === 'edit') {
+					if (owner.pets) {
+						owner.pets
+						.map(pet => {
+							if (pet._id === formData._id) {
+								pet.info = formData.type+" : "+formData.name+" ("+formData.breed+")"
+							}
+						})
+					}
 				}
 				return owner;
 			}
 		});
-		
 		if (!owner.length) {
 			error = true;
 			statusCode = 400;
@@ -62,9 +66,18 @@ class Pet {
 		}
 		
 		if (!error) {
-			db.pet.push(formData);
-			statusCode = 201;
-			responseData = {message: "Pet inserted", data: formData};
+			if (actionType === 'add') {
+				db.pet.push(formData);
+				responseData = {message: "Pet inserted", data: formData};
+				statusCode = 201;
+			} else if (actionType === 'edit') {
+				db.pet.map((pet, index) => {
+					if(pet._id === formData._id){
+						db.pet[index] = formData
+					}
+				})
+				responseData = {message: "Pet updated", data: formData};
+			}
 			jsonfile.writeFile(file, db, err => {
 				console.error(err)
 			})
@@ -91,7 +104,8 @@ export default ({ config }) => {
 		res.json(db.pet);
 	});
 
-	api.post('/pet', pet.createPet);
+	api.post('/pet', pet.savePet);
+	api.put('/pet', pet.savePet);
 
 	return api;
 }

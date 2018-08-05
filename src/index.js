@@ -24,12 +24,6 @@ app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
 
-// connect to db
-// initializeDb( db => {
-// 	console.log(db);
-// internal middleware
-// app.use(middleware({ config, db }));
-
 // api router
 app.use('/api/v1/', apiV1({ config }));
 

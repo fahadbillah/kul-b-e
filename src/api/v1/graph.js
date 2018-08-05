@@ -3,7 +3,6 @@ import { buildSchema } from 'graphql';
 import graphqlHTTP from 'express-graphql';
 const jsonfile = require('jsonfile')
 const file = './db.json';
-const fullDB = jsonfile.readFileSync(file)
 
 export default ({ config }) => {
     let graphQL = Router();
@@ -11,7 +10,12 @@ export default ({ config }) => {
     const schema = buildSchema(`
         type Query {
             hello: String
-            ownerList: String
+            ownerList: [String]
+            petList(type: String): [String]
+        }
+        type Pet {
+            name: String
+            breed: String
         }
     `);
 
@@ -23,25 +27,32 @@ export default ({ config }) => {
         },
         ownerList: () => {
             const db = jsonfile.readFileSync(file)
-            return db.owner;
-            // return db.owner.map(owner => {
-            //     return owner.name
-            // })
+            return db.owner.map(owner => {
+                return owner.name
+            })
         },
         petList: (type) => {
             console.log(type);
             const db = jsonfile.readFileSync(file)
             return db.pet.filter(pet => {
-                if (pet.type === type) {
-                    return pet
+                console.log(pet.type);
+                if (pet.type === type.type) {
+                    console.log(pet);
+                    return {
+                        name: pet.name,
+                        breed: pet.breed,
+                    }
+                    // return pet
                 }
             })
         },
     };
 
     graphQL.post('/',  graphqlHTTP({
-        rootValue: fullDB,
+        schema: schema,
+        rootValue: root,
         graphiql: true,
+        pretty: true,
     }));
 
     return graphQL;

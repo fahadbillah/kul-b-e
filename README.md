@@ -21,4 +21,4 @@ PORT=3000 npm start
 
 ## Postman Link
 
-[Api Test Link](https://www.getpostman.com/collections/be8c1caef20d6fc759ed)
+[Api Test Link](https://www.getpostman.com/collections/908e0eb922717a681cb4)

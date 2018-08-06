@@ -4,6 +4,7 @@ kul-b-e Homework
 Getting Started
 ---------------
 
+Run using npm
 ```sh
 # clone it
 git clone git@github.com:fahadbillah/kul-b-e.git
@@ -19,15 +20,31 @@ PORT=3000 npm run dev
 PORT=3000 npm start
 ```
 
+Run using docker
+------
+```sh
+git clone git@github.com:fahadbillah/kul-b-e.git
+cd kul-b-e
+
+# Build your docker
+docker build -t kulbe .
+
+# run your docker
+docker run -p 3000:3000 kulbe
+
+```
+
 ## Postman Link
 
-[Api Test Link](https://www.getpostman.com/collections/908e0eb922717a681cb4) : Use this postman link to add edit pet to KUL-B-E
+Instead of using mocha/chai I used postman to test api.
+
+[Api Test Link](https://www.getpostman.com/collections/908e0eb922717a681cb4) : Use this postman link to add/edit pet to KUL-B-E
 
 ## GraphQL Link
 
-[GraphQL Link](http://localhost:3000/api/v1/query) : use this link checkout GraphQL using GraphiQL
+go to `http://localhost:3000/api/v1/query` route to check GraphQL using GraphiQL
 
-### Some of GraphQL
+### Some GraphQL Queries
 ```
 {
   owner (_id: String) {

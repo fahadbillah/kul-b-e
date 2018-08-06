@@ -3,8 +3,6 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
-import initializeDb from './db';
-import middleware from './middleware';
 import apiV1 from './api/v1';
 import graphql from './api/v1/graph';
 import config from './config.json';

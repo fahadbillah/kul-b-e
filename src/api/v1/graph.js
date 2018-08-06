@@ -6,6 +6,20 @@ const file = './db.json';
 
 export default ({ config }) => {
     let graphQL = Router();
+    const CatType = new GraphQLObjectType({
+        name: 'Cat',
+        fields:() => ({
+            _id: {type: GraphQLString},
+            name: {type: GraphQLString},
+        })
+    })
+    const DogType = new GraphQLObjectType({
+        name: 'Dog',
+        fields:() => ({
+            _id: {type: GraphQLString},
+            name: {type: GraphQLString},
+        })
+    })
     const PetType = new GraphQLObjectType({
         name: 'Pet',
         fields:() => ({
@@ -13,6 +27,7 @@ export default ({ config }) => {
             name: {type: GraphQLString},
             color: {type: GraphQLString},
             breed: {type: GraphQLString},
+            owner: {type: GraphQLString},
             info: {type: GraphQLString},
             age: {type: GraphQLInt}
         })
@@ -26,7 +41,18 @@ export default ({ config }) => {
             address: {type: GraphQLString},
             phone: {type: GraphQLString},
             pets: {
-                type: new GraphQLList(PetType)
+                type: new GraphQLList(PetType),
+                args: {
+                    end: {
+                      type: GraphQLInt
+                    },
+                    start: {
+                      type: GraphQLInt
+                    }
+                },
+                resolve(parentValue, args) {
+                    return parentValue.pets ? parentValue.pets.slice(args.start, args.end) : null
+                }
             }
         })
     })
@@ -36,10 +62,17 @@ export default ({ config }) => {
         fields:{
             pets:{
                 type: new GraphQLList(PetType),
-                resolve(){
+                args: {
+                    end: {
+                      type: GraphQLInt
+                    },
+                    start: {
+                      type: GraphQLInt
+                    }
+                },
+                resolve(parentValue, args) {
                     const fullDB = jsonfile.readFileSync(file)
-                    console.log(fullDB.pet);
-                    return fullDB.pet
+                    return fullDB.pet.slice(args.start, args.end);
                 }
             },
             pet:{
@@ -64,6 +97,51 @@ export default ({ config }) => {
                     return fullDB.owner.find(owner => {
                         return owner._id === args._id;
                     })
+                }
+            },
+            owners:{
+                type: new GraphQLList(OwnerType),
+                args: {
+                    end: {
+                      type: GraphQLInt
+                    },
+                    start: {
+                      type: GraphQLInt
+                    }
+                },
+                resolve(parentValue, args) {
+                    const fullDB = jsonfile.readFileSync(file)
+                    return fullDB.owner.slice(args.start, args.end);
+                }
+            },
+            cats:{
+                type: new GraphQLList(CatType),
+                args: {
+                    end: {
+                      type: GraphQLInt
+                    },
+                    start: {
+                      type: GraphQLInt
+                    }
+                },
+                resolve(parentValue, args) {
+                    const fullDB = jsonfile.readFileSync(file)
+                    return fullDB.cat.slice(args.start, args.end);
+                }
+            },
+            dogs:{
+                type: new GraphQLList(DogType),
+                args: {
+                    end: {
+                      type: GraphQLInt
+                    },
+                    start: {
+                      type: GraphQLInt
+                    }
+                },
+                resolve(parentValue, args) {
+                    const fullDB = jsonfile.readFileSync(file)
+                    return fullDB.dog.slice(args.start, args.end);
                 }
             }
         }
